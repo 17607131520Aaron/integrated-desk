@@ -172,6 +172,18 @@
     "require-await": "warn",
     "symbol-description": "warn",
 
+    "curly": ["warn", "all"],
+    "default-param-last": "warn",
+    "func-name-matching": "warn",
+    "max-depth": ["warn", 4],
+    "max-nested-callbacks": ["warn", 3],
+    "max-params": ["warn", 5],
+    "no-await-in-loop": "warn",
+    "no-promise-executor-return": "error",
+    "no-template-curly-in-string": "warn",
+    "no-unreachable-loop": "error",
+    "require-atomic-updates": "error",
+
     "import/no-cycle": ["error", { "maxDepth": 3 }],
     "import/no-self-import": "error",
     "import/no-useless-path-segments": ["warn", { "noUselessIndex": true }],
@@ -216,8 +228,24 @@
   "overrides": [
     {
       "files": ["src/main/**/*.ts", "src/preload.ts"],
+      "env": {
+        "browser": false,
+        "node": true
+      },
       "rules": {
-        "no-console": "off"
+        "no-console": "off",
+        "@typescript-eslint/no-require-imports": "off",
+        "import/no-nodejs-modules": "off"
+      }
+    },
+    {
+      "files": ["src/renderer.tsx", "src/app/**/*.tsx", "src/pages/**/*.tsx", "src/components/**/*.tsx"],
+      "env": {
+        "browser": true,
+        "node": false
+      },
+      "rules": {
+        "no-restricted-globals": ["error", "process", "Buffer", "__dirname", "__filename"]
       }
     },
     {

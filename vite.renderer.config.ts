@@ -1,26 +1,14 @@
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import path from "path";
-
-// 注意：如果 Electron Forge 的 Vite 插件未自动处理 React，
-// 请安装 @vitejs/plugin-react 并取消下面的注释
-// import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config
 export default defineConfig({
   plugins: [
-    // 如果 Electron Forge 未自动处理 React，取消下面的注释
-    // react({
-    //   // 启用 Fast Refresh
-    //   fastRefresh: true,
-    //   // 使用新的 JSX 运行时
-    //   jsxRuntime: 'automatic',
-    //   // 开发环境启用 babel
-    //   babel: {
-    //     plugins: [],
-    //     // 生产环境移除 console 和 debugger
-    //     compact: process.env.NODE_ENV === 'production',
-    //   },
-    // }),
+    react({
+      // 使用新的 JSX 运行时
+      jsxRuntime: "automatic",
+    }),
   ],
 
   // 路径别名配置
@@ -152,5 +140,20 @@ export default defineConfig({
   define: {
     __DEV__: JSON.stringify(process.env.NODE_ENV === "development"),
     __PROD__: JSON.stringify(process.env.NODE_ENV === "production"),
+  },
+
+  // esbuild 配置
+  esbuild: {
+    // 生产环境移除 console 和 debugger
+    drop: process.env.NODE_ENV === "production" ? ["console", "debugger"] : [],
+    // 保留法律注释
+    legalComments: "none",
+  },
+
+  // 预览服务器配置
+  preview: {
+    port: 4173,
+    host: true,
+    strictPort: true,
   },
 });
