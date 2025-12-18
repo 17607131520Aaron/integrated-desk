@@ -19,7 +19,7 @@ export default defineConfig({
     target: "node18", // Electron 主进程使用 Node.js 环境
     outDir: ".vite/build",
     lib: {
-      entry: path.resolve(__dirname, "src/main.ts"),
+      entry: path.resolve(__dirname, "src/main/index.ts"),
       formats: ["cjs"],
       fileName: () => "main.js",
     },
