@@ -1,0 +1,18 @@
+.barcode-manage-page {
+  padding: 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .barcode-manage-result-card-container {
+    width: 100%;
+    flex: 1;
+    // 结果卡片整体的最小高度
+    min-height: 260px;
+
+    // 直接限制内部 antd Card body 的最小高度，更稳妥
+    .ant-card-body {
+      min-height: 260px;
+    }
+  }
+}

@@ -87,6 +87,18 @@ export const menuItems: MenuProps['items'] = [
     ],
   },
   {
+    key: 'barcode',
+    icon: <BarChartOutlined />,
+    label: '条码管理',
+    children: [
+      {
+        key: '/barcode/manage',
+        icon: <BarChartOutlined />,
+        label: '条码生成',
+      },
+    ],
+  },
+  {
     key: 'settings',
     icon: <SettingOutlined />,
     label: '系统设置',

@@ -1,8 +1,8 @@
-import { lazy } from 'react';
+import {lazy} from 'react';
 
-import { createHashRouter } from 'react-router-dom';
+import {createHashRouter} from 'react-router-dom';
 
-import type { DataRouter } from 'react-router-dom';
+import type {DataRouter} from 'react-router-dom';
 
 const LayoutHome = lazy(() => import('@/app'));
 const Home = lazy(() => import('@/pages/Home'));
@@ -22,6 +22,9 @@ const TeamMembers = lazy(() => import('@/pages/Team/Members'));
 const TeamRoles = lazy(() => import('@/pages/Team/Roles'));
 const TeamDepartments = lazy(() => import('@/pages/Team/Departments'));
 
+// Barcode 模块
+const BarcodeManage = lazy(() => import('@/pages/Barcode/Manage'));
+
 // Settings 模块
 const SettingsBasic = lazy(() => import('@/pages/Settings/Basic'));
 const SettingsSecurity = lazy(() => import('@/pages/Settings/Security'));
@@ -35,7 +38,7 @@ const router: DataRouter = createHashRouter([
     path: '/',
     element: <LayoutHome />,
     children: [
-      { index: true, element: <Home /> },
+      {index: true, element: <Home />},
       // Dashboard 路由
       {
         path: '/dashboard/overview',
@@ -70,6 +73,10 @@ const router: DataRouter = createHashRouter([
       {
         path: '/team/departments',
         element: <TeamDepartments />,
+      },
+      {
+        path: '/barcode/manage',
+        element: <BarcodeManage />,
       },
       // Settings 路由
       {
