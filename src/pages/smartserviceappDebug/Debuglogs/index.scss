@@ -1,262 +1,167 @@
-.debuglogs {
+.rn-debug-logs {
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  padding: 16px;
-  background: #f5f5f5;
+  padding: 24px;
+  background: #f0f2f5;
 
-  &__card {
-    height: 100%;
+  &-header {
+    margin-bottom: 16px;
+  }
+
+  &-toolbar {
+    margin-bottom: 16px;
+    
+    .ant-card-body {
+      padding: 16px;
+    }
+  }
+
+  &-content {
+    flex: 1;
     display: flex;
     flex-direction: column;
-
-    .ant-card-head {
-      flex-shrink: 0;
-    }
-
+    overflow: hidden;
+    
     .ant-card-body {
-      flex: 1;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
       overflow: hidden;
     }
   }
 
-  &__header {
-    padding: 12px 16px;
-    border-bottom: 1px solid #e8e8e8;
-    background: #fafafa;
-
-    .connection-panel {
-      margin-bottom: 12px;
-    }
-
-    .log-toolbar {
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  &__content {
+  &-container {
     flex: 1;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 16px;
+    box-sizing: border-box;
+
+    &::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #252526;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #424242;
+      border-radius: 6px;
+
+      &:hover {
+        background: #4e4e4e;
+      }
+    }
   }
-}
 
-// 日志查看器
-.log-viewer {
-  height: 100%;
-  overflow-y: auto;
-  background: #fff;
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', 'Source Code Pro', monospace;
-  font-size: 12px;
-  line-height: 1.5;
-
-  &--empty {
+  &-empty {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #999;
-  }
-}
-
-// 单条日志
-.log-entry {
-  border-bottom: 1px solid #f0f0f0;
-  padding: 4px 12px;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.02) !important;
+    min-height: 400px;
+    color: #858585;
   }
 
-  &__main {
-    display: flex;
-    align-items: flex-start;
-    cursor: pointer;
-    gap: 8px;
-  }
-
-  &__expand-icon {
-    color: #999;
-    font-size: 10px;
-    width: 12px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  &__timestamp {
-    color: #999;
-    flex-shrink: 0;
-    font-size: 11px;
-  }
-
-  &__level {
-    font-weight: 600;
-    flex-shrink: 0;
-    font-size: 11px;
-    min-width: 50px;
-  }
-
-  &__message {
-    flex: 1;
-    word-break: break-all;
-    white-space: pre-wrap;
-  }
-
-  &__data {
-    margin-top: 8px;
-    margin-left: 20px;
-    padding: 8px;
-    background: #f8f8f8;
-    border-radius: 4px;
-    border-left: 3px solid #ddd;
-  }
-
-  &__data-item {
-    margin: 0;
+  &-item {
     padding: 4px 0;
-    font-size: 11px;
-    color: #333;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    word-break: break-word;
     white-space: pre-wrap;
-    word-break: break-all;
+    transition: background-color 0.2s;
 
-    &:not(:last-child) {
-      border-bottom: 1px dashed #e8e8e8;
-      padding-bottom: 8px;
-      margin-bottom: 8px;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    &[data-level='error'] {
+      background-color: rgba(255, 77, 79, 0.05);
+      
+      &:hover {
+        background-color: rgba(255, 77, 79, 0.1);
+      }
+    }
+
+    &[data-level='warn'] {
+      background-color: rgba(250, 173, 20, 0.05);
+      
+      &:hover {
+        background-color: rgba(250, 173, 20, 0.1);
+      }
+    }
+
+    &[data-level='info'] {
+      background-color: rgba(24, 144, 255, 0.05);
+      
+      &:hover {
+        background-color: rgba(24, 144, 255, 0.1);
+      }
     }
   }
 
-  // 日志级别样式
-  &--log {
-    .log-entry__level {
-      color: #333;
+  &-level {
+    display: inline-block;
+    font-weight: 600;
+    margin-right: 8px;
+    min-width: 60px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  &-message {
+    color: #d4d4d4;
+    flex: 1;
+  }
+
+  &-data {
+    margin-top: 8px;
+    margin-left: 68px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    border-left: 2px solid #007acc;
+
+    pre {
+      margin: 0;
+      padding: 0;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      color: #ce9178;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
   }
 
-  &--info {
-    .log-entry__level {
-      color: #0969da;
-    }
+  &-footer {
+    padding: 8px 16px;
+    background: #252526;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
+}
 
-  &--warn {
-    .log-entry__level {
-      color: #9a6700;
-    }
-    .log-entry__data {
-      border-left-color: #9a6700;
-    }
-  }
+// 响应式调整
+@media (max-width: 768px) {
+  .rn-debug-logs {
+    padding: 16px;
 
-  &--error {
-    .log-entry__level {
-      color: #cf222e;
-    }
-    .log-entry__data {
-      border-left-color: #cf222e;
-    }
-  }
-
-  &--debug {
-    .log-entry__level {
-      color: #8250df;
-    }
-    .log-entry__data {
-      border-left-color: #8250df;
+    &-toolbar {
+      .ant-space {
+        flex-direction: column;
+        align-items: flex-start !important;
+      }
     }
   }
 }
 
-// 连接面板
-.connection-panel {
-  .connection-label {
-    font-weight: 500;
-    color: #333;
-  }
-}
-
-// 工具栏
-.log-toolbar {
-  .ant-checkbox-wrapper {
-    font-size: 12px;
-  }
-}
-
-// Chrome DevTools 风格的 JSON 显示
-.json-toggle {
-  cursor: pointer;
-  color: #999;
-  font-size: 10px;
-  margin-right: 2px;
-  display: inline-flex;
-  align-items: center;
-  vertical-align: middle;
-
-  &:hover {
-    color: #333;
-  }
-}
-
-.json-content {
-  margin-left: 16px;
-}
-
-.json-item {
-  line-height: 1.6;
-}
-
-.json-key {
-  color: #881391;
-}
-
-.json-index {
-  color: #1a1aa6;
-}
-
-.json-string {
-  color: #c41a16;
-}
-
-.json-number {
-  color: #1c00cf;
-}
-
-.json-boolean {
-  color: #0d22aa;
-}
-
-.json-null,
-.json-undefined {
-  color: #808080;
-}
-
-.json-bracket {
-  color: #333;
-}
-
-.json-comma {
-  color: #333;
-}
-
-.json-preview {
-  color: #808080;
-  font-style: italic;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-.json-array,
-.json-object {
-  display: inline;
-}
-
-.log-entry__content {
-  flex: 1;
-  word-break: break-word;
-}
-
-.log-entry__data-inline {
-  display: inline;
-}
