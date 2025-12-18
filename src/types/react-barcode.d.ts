@@ -42,7 +42,7 @@ declare module 'react-barcode' {
     marginLeft?: number;
     marginRight?: number;
     flat?: boolean;
-    valid?(valid: {valid: boolean; error?: string}): void;
+    valid?(valid: { valid: boolean; error?: string }): void;
     renderer?: 'svg' | 'canvas' | 'img';
   }
 
@@ -67,6 +67,3 @@ declare module 'qrcode.react' {
 
   export default QRCodeCanvas;
 }
-
-
-

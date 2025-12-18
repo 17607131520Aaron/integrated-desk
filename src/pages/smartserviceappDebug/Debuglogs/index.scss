@@ -11,7 +11,7 @@
 
   &-toolbar {
     margin-bottom: 16px;
-    
+
     .ant-card-body {
       padding: 16px;
     }
@@ -22,7 +22,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    
+
     .ant-card-body {
       padding: 0;
       display: flex;
@@ -38,7 +38,7 @@
     overflow-x: hidden;
     background: #1e1e1e;
     color: #d4d4d4;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
     font-size: 13px;
     line-height: 1.6;
     padding: 16px;
@@ -83,25 +83,25 @@
       background-color: rgba(255, 255, 255, 0.03);
     }
 
-    &[data-level='error'] {
+    &[data-level="error"] {
       background-color: rgba(255, 77, 79, 0.05);
-      
+
       &:hover {
         background-color: rgba(255, 77, 79, 0.1);
       }
     }
 
-    &[data-level='warn'] {
+    &[data-level="warn"] {
       background-color: rgba(250, 173, 20, 0.05);
-      
+
       &:hover {
         background-color: rgba(250, 173, 20, 0.1);
       }
     }
 
-    &[data-level='info'] {
+    &[data-level="info"] {
       background-color: rgba(24, 144, 255, 0.05);
-      
+
       &:hover {
         background-color: rgba(24, 144, 255, 0.1);
       }
@@ -133,7 +133,7 @@
     pre {
       margin: 0;
       padding: 0;
-      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-family: "Consolas", "Monaco", "Courier New", monospace;
       font-size: 12px;
       color: #ce9178;
       white-space: pre-wrap;
@@ -164,4 +164,3 @@
     }
   }
 }
-

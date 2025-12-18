@@ -1,8 +1,8 @@
-import {lazy} from 'react';
+import { lazy } from 'react';
 
-import {createHashRouter} from 'react-router-dom';
+import { createHashRouter } from 'react-router-dom';
 
-import type {DataRouter} from 'react-router-dom';
+import type { DataRouter } from 'react-router-dom';
 
 const LayoutHome = lazy(() => import('@/app'));
 const Home = lazy(() => import('@/pages/Home'));
@@ -38,7 +38,7 @@ const router: DataRouter = createHashRouter([
     path: '/',
     element: <LayoutHome />,
     children: [
-      {index: true, element: <Home />},
+      { index: true, element: <Home /> },
       // Dashboard 路由
       {
         path: '/dashboard/overview',

@@ -54,7 +54,7 @@
       background: linear-gradient(135deg, #237ffa 0%, #1e6dd8 50%, #1a5fc4 100%);
       border-radius: 10px;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 
+      box-shadow:
         0 2px 8px rgba(35, 127, 250, 0.2),
         0 1px 3px rgba(0, 0, 0, 0.1);
       position: relative;
@@ -64,20 +64,25 @@
 
       // 顶部高光效果
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         height: 50%;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.15) 0%,
+          rgba(255, 255, 255, 0.05) 50%,
+          transparent 100%
+        );
         pointer-events: none;
         border-radius: 10px 10px 0 0;
       }
 
       // 底部阴影增强
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: 0;
         left: 0;
@@ -89,7 +94,7 @@
       }
 
       &:hover {
-        box-shadow: 
+        box-shadow:
           0 4px 16px rgba(35, 127, 250, 0.3),
           0 2px 6px rgba(0, 0, 0, 0.15);
         transform: translateY(-1px);
@@ -98,7 +103,7 @@
 
       &:active {
         transform: translateY(0);
-        box-shadow: 
+        box-shadow:
           0 2px 8px rgba(35, 127, 250, 0.2),
           0 1px 3px rgba(0, 0, 0, 0.1);
       }
@@ -212,13 +217,17 @@
       // 一级菜单选中状态
       .ant-menu-item {
         &.ant-menu-item-selected {
-          background: linear-gradient(90deg, rgba(35, 127, 250, 0.12) 0%, rgba(35, 127, 250, 0.06) 100%);
+          background: linear-gradient(
+            90deg,
+            rgba(35, 127, 250, 0.12) 0%,
+            rgba(35, 127, 250, 0.06) 100%
+          );
           color: #237ffa;
           font-weight: 500;
           position: relative;
 
           &::before {
-            content: '';
+            content: "";
             position: absolute;
             left: 0;
             top: 50%;

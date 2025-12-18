@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, { useMemo, useState } from 'react';
 
 import {
   Button,
@@ -14,12 +14,12 @@ import {
   Typography,
 } from 'antd';
 // eslint-disable-next-line import/order
-import {QRCodeCanvas} from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import Barcode from 'react-barcode';
 
 import './index.scss';
 
-const {Title, Text} = Typography;
+const { Title, Text } = Typography;
 
 type CodeType = 'QRCODE' | 'CODE128' | 'EAN13' | 'EAN8' | 'UPC' | 'CODE39';
 
@@ -35,13 +35,13 @@ const generateCodeId = () => {
   return `code-${Date.now()}-${codeIdSeed}-${Math.random().toString(36).slice(2, 8)}`;
 };
 
-const CODE_TYPES: Array<{label: string; value: CodeType}> = [
-  {label: '二维码（QR Code）', value: 'QRCODE'},
-  {label: '条形码 - CODE128（通用，支持字母+数字）', value: 'CODE128'},
-  {label: '条形码 - EAN-13（13位数字）', value: 'EAN13'},
-  {label: '条形码 - EAN-8（8位数字）', value: 'EAN8'},
-  {label: '条形码 - UPC-A（12位数字）', value: 'UPC'},
-  {label: '条形码 - Code39（字母+数字，常见一维码）', value: 'CODE39'},
+const CODE_TYPES: Array<{ label: string; value: CodeType }> = [
+  { label: '二维码（QR Code）', value: 'QRCODE' },
+  { label: '条形码 - CODE128（通用，支持字母+数字）', value: 'CODE128' },
+  { label: '条形码 - EAN-13（13位数字）', value: 'EAN13' },
+  { label: '条形码 - EAN-8（8位数字）', value: 'EAN8' },
+  { label: '条形码 - UPC-A（12位数字）', value: 'UPC' },
+  { label: '条形码 - Code39（字母+数字，常见一维码）', value: 'CODE39' },
 ];
 
 const getRandomAlphaNum = (length: number) => {
@@ -196,8 +196,8 @@ const BarcodeManage: React.FC = () => {
     form
       .validateFields(['type', 'count'])
       .then((values) => {
-        const {type} = values;
-        const {count} = values;
+        const { type } = values;
+        const { count } = values;
 
         if (count <= 0) {
           message.warning('生成数量必须大于 0');
@@ -209,7 +209,7 @@ const BarcodeManage: React.FC = () => {
           return;
         }
 
-        const list: GeneratedCode[] = Array.from({length: count}).map(() => ({
+        const list: GeneratedCode[] = Array.from({ length: count }).map(() => ({
           id: generateCodeId(),
           type,
           value: generateRandomValueByType(type),
@@ -227,7 +227,7 @@ const BarcodeManage: React.FC = () => {
     form
       .validateFields(['type', 'customValue'])
       .then((values) => {
-        const {type, customValue} = values as {
+        const { type, customValue } = values as {
           type: CodeType;
           customValue: string;
         };
@@ -308,11 +308,11 @@ const BarcodeManage: React.FC = () => {
           alignItems: 'stretch',
         }}
       >
-        <div style={{width: 420, flexShrink: 0}}>
+        <div style={{ width: 420, flexShrink: 0 }}>
           <Card
             size="small"
-            style={{height: '100%', borderRadius: 8}}
-            styles={{body: {paddingBottom: 12, paddingTop: 16}}}
+            style={{ height: '100%', borderRadius: 8 }}
+            styles={{ body: { paddingBottom: 12, paddingTop: 16 } }}
             title="条码生成"
           >
             <Form
@@ -327,17 +327,21 @@ const BarcodeManage: React.FC = () => {
               <Form.Item
                 label="条码类型"
                 name="type"
-                rules={[{required: true, message: '请选择条码类型'}]}
+                rules={[{ required: true, message: '请选择条码类型' }]}
               >
-                <Select style={{width: '100%'}} options={CODE_TYPES} placeholder="请选择条码类型" />
+                <Select
+                  style={{ width: '100%' }}
+                  options={CODE_TYPES}
+                  placeholder="请选择条码类型"
+                />
               </Form.Item>
 
               <Form.Item
                 label="生成数量"
                 name="count"
-                rules={[{required: true, message: '请输入生成数量'}]}
+                rules={[{ required: true, message: '请输入生成数量' }]}
               >
-                <InputNumber min={1} max={100} style={{width: '100%'}} placeholder="数量" />
+                <InputNumber min={1} max={100} style={{ width: '100%' }} placeholder="数量" />
               </Form.Item>
 
               <Form.Item>
@@ -357,7 +361,7 @@ const BarcodeManage: React.FC = () => {
               <Form.Item
                 label="指定内容"
                 name="customValue"
-                rules={[{required: true, message: '请输入需要生成条码的内容'}]}
+                rules={[{ required: true, message: '请输入需要生成条码的内容' }]}
               >
                 <div
                   style={{
@@ -369,7 +373,7 @@ const BarcodeManage: React.FC = () => {
                   <Input.TextArea
                     allowClear
                     placeholder="在此输入字符串；支持多行输入，每行一个内容，换行可批量生成条码"
-                    autoSize={{minRows: 3, maxRows: 6}}
+                    autoSize={{ minRows: 3, maxRows: 6 }}
                   />
                   <div
                     style={{
@@ -378,7 +382,7 @@ const BarcodeManage: React.FC = () => {
                       alignItems: 'center',
                     }}
                   >
-                    <Text type="secondary" style={{fontSize: 12}}>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
                       单行+数量：可按同一内容生成多个；多行：每行一个内容，忽略数量。
                     </Text>
                     <Button type="primary" onClick={handleGenerateFromValue}>
@@ -412,7 +416,13 @@ const BarcodeManage: React.FC = () => {
               overflowY: 'auto',
             },
           }}
-          style={{borderRadius: 8, flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column'}}
+          style={{
+            borderRadius: 8,
+            flex: 1,
+            minWidth: 0,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
         >
           {hasData ? (
             <>
@@ -422,8 +432,8 @@ const BarcodeManage: React.FC = () => {
                     <Card
                       size="small"
                       variant="outlined"
-                      styles={{body: {padding: '12px 8px 8px'}}}
-                      style={{borderRadius: 8}}
+                      styles={{ body: { padding: '12px 8px 8px' } }}
+                      style={{ borderRadius: 8 }}
                     >
                       {item.type === 'QRCODE' ? (
                         <div
@@ -464,10 +474,10 @@ const BarcodeManage: React.FC = () => {
                           gap: 2,
                         }}
                       >
-                        <Text type="secondary" style={{fontSize: 12}}>
+                        <Text type="secondary" style={{ fontSize: 12 }}>
                           类型：{item.type}
                         </Text>
-                        <Text style={{fontSize: 12}} ellipsis>
+                        <Text style={{ fontSize: 12 }} ellipsis>
                           内容：{item.value}
                         </Text>
                       </div>
@@ -475,7 +485,7 @@ const BarcodeManage: React.FC = () => {
                   </Col>
                 ))}
               </Row>
-              <Text type="secondary" style={{marginTop: 16, display: 'block', fontSize: 12}}>
+              <Text type="secondary" style={{ marginTop: 16, display: 'block', fontSize: 12 }}>
                 提示：条码内容为随机生成，仅供测试或演示使用，如需正式使用请根据业务规则生成。
               </Text>
             </>

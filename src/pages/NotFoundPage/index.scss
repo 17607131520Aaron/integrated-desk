@@ -75,7 +75,8 @@
     }
 
     @keyframes floatPattern {
-      0%, 100% {
+      0%,
+      100% {
         transform: translate(0, 0) scale(1);
       }
       50% {
@@ -91,7 +92,7 @@
     z-index: 1;
     background: #ffffff;
     border-radius: 24px;
-    box-shadow: 
+    box-shadow:
       0 20px 60px rgba(35, 127, 250, 0.12),
       0 8px 24px rgba(0, 0, 0, 0.06),
       0 0 0 1px rgba(35, 127, 250, 0.05);
@@ -141,7 +142,8 @@
       animation: personFloat 3s ease-in-out infinite;
 
       @keyframes personFloat {
-        0%, 100% {
+        0%,
+        100% {
           transform: translateY(0);
         }
         50% {
@@ -162,7 +164,8 @@
         animation: headShake 4s ease-in-out infinite;
 
         @keyframes headShake {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateX(-50%) rotate(0deg);
           }
           25% {
@@ -200,7 +203,8 @@
         animation: boxMove 3s ease-in-out infinite;
 
         @keyframes boxMove {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateX(-50%) rotate(0deg);
           }
           50% {
@@ -222,7 +226,8 @@
       filter: drop-shadow(0 4px 12px rgba(35, 127, 250, 0.3));
 
       @keyframes questionPulse {
-        0%, 100% {
+        0%,
+        100% {
           transform: scale(1) rotate(0deg);
         }
         50% {
@@ -255,7 +260,8 @@
         animation: nodePulse 2s ease-in-out infinite;
 
         @keyframes nodePulse {
-          0%, 100% {
+          0%,
+          100% {
             transform: scale(1);
             opacity: 0.6;
           }
@@ -338,7 +344,7 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           top: -2px;
           left: -2px;
@@ -356,7 +362,8 @@
         animation: leafSway 3s ease-in-out infinite;
 
         @keyframes leafSway {
-          0%, 100% {
+          0%,
+          100% {
             transform: rotate(0deg);
           }
           50% {
@@ -412,7 +419,8 @@
     letter-spacing: -2px;
 
     @keyframes titleGlow {
-      0%, 100% {
+      0%,
+      100% {
         filter: drop-shadow(0 0 10px rgba(35, 127, 250, 0.3));
       }
       50% {
@@ -464,7 +472,7 @@
     border-radius: 12px;
     background: linear-gradient(135deg, #237ffa 0%, #1e6dd8 100%);
     border: none;
-    box-shadow: 
+    box-shadow:
       0 6px 20px rgba(35, 127, 250, 0.35),
       0 2px 8px rgba(35, 127, 250, 0.2);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -472,7 +480,7 @@
     overflow: hidden;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: -100%;
@@ -484,7 +492,7 @@
 
     &:hover {
       background: linear-gradient(135deg, #2a8aff 0%, #2370e8 100%);
-      box-shadow: 
+      box-shadow:
         0 8px 24px rgba(35, 127, 250, 0.45),
         0 4px 12px rgba(35, 127, 250, 0.3);
       transform: translateY(-3px);
@@ -496,7 +504,7 @@
 
     &:active {
       transform: translateY(-1px);
-      box-shadow: 
+      box-shadow:
         0 4px 12px rgba(35, 127, 250, 0.35),
         0 2px 6px rgba(35, 127, 250, 0.2);
     }
@@ -517,7 +525,7 @@
     overflow: hidden;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 50%;
@@ -526,7 +534,9 @@
       border-radius: 50%;
       background: rgba(35, 127, 250, 0.1);
       transform: translate(-50%, -50%);
-      transition: width 0.4s, height 0.4s;
+      transition:
+        width 0.4s,
+        height 0.4s;
     }
 
     &:hover {
@@ -534,7 +544,7 @@
       color: #237ffa;
       background: rgba(35, 127, 250, 0.05);
       transform: translateY(-3px);
-      box-shadow: 
+      box-shadow:
         0 6px 20px rgba(35, 127, 250, 0.15),
         0 2px 8px rgba(0, 0, 0, 0.08);
 
@@ -546,7 +556,7 @@
 
     &:active {
       transform: translateY(-1px);
-      box-shadow: 
+      box-shadow:
         0 2px 8px rgba(35, 127, 250, 0.1),
         0 1px 4px rgba(0, 0, 0, 0.05);
     }

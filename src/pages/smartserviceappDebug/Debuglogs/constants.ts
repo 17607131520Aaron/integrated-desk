@@ -1,15 +1,15 @@
-import type {SelectProps} from 'antd';
+import type { SelectProps } from 'antd';
 
 /**
  * 日志级别选项
  */
 export const levelOptions: SelectProps['options'] = [
-  {label: '全部', value: 'all'},
-  {label: '日志', value: 'log'},
-  {label: '信息', value: 'info'},
-  {label: '警告', value: 'warn'},
-  {label: '错误', value: 'error'},
-  {label: '调试', value: 'debug'},
+  { label: '全部', value: 'all' },
+  { label: '日志', value: 'log' },
+  { label: '信息', value: 'info' },
+  { label: '警告', value: 'warn' },
+  { label: '错误', value: 'error' },
+  { label: '调试', value: 'debug' },
 ];
 
 /**

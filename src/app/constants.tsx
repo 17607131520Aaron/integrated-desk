@@ -17,7 +17,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 
-import type {MenuProps} from 'antd';
+import type { MenuProps } from 'antd';
 // 菜单项配置 - 支持一级和二级菜单
 export const menuItems: MenuProps['items'] = [
   {
