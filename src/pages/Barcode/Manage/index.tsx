@@ -329,6 +329,7 @@ const BarcodeManage: React.FC = () => {
           display: 'flex',
           gap: 16,
           flex: 1,
+          minHeight: 0,
           alignItems: 'stretch',
         }}
       >
