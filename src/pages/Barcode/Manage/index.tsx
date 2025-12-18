@@ -29,6 +29,12 @@ interface GeneratedCode {
   type: CodeType;
 }
 
+let codeIdSeed = 0;
+const generateCodeId = () => {
+  codeIdSeed += 1;
+  return `code-${Date.now()}-${codeIdSeed}-${Math.random().toString(36).slice(2, 8)}`;
+};
+
 const CODE_TYPES: Array<{label: string; value: CodeType}> = [
   {label: '二维码（QR Code）', value: 'QRCODE'},
   {label: '条形码 - CODE128（通用，支持字母+数字）', value: 'CODE128'},
@@ -188,7 +194,7 @@ const BarcodeManage: React.FC = () => {
 
   const handleGenerate = () => {
     form
-      .validateFields()
+      .validateFields(['type', 'count'])
       .then((values) => {
         const {type} = values;
         const {count} = values;
@@ -203,8 +209,8 @@ const BarcodeManage: React.FC = () => {
           return;
         }
 
-        const list: GeneratedCode[] = Array.from({length: count}).map((_, index) => ({
-          id: `${Date.now()}-${index}`,
+        const list: GeneratedCode[] = Array.from({length: count}).map(() => ({
+          id: generateCodeId(),
           type,
           value: generateRandomValueByType(type),
         }));
@@ -219,12 +225,11 @@ const BarcodeManage: React.FC = () => {
 
   const handleGenerateFromValue = () => {
     form
-      .validateFields(['type', 'customValue', 'count'])
+      .validateFields(['type', 'customValue'])
       .then((values) => {
-        const {type, customValue, count} = values as {
+        const {type, customValue} = values as {
           type: CodeType;
           customValue: string;
-          count: number;
         };
 
         const lines: string[] = (customValue || '')
@@ -237,59 +242,29 @@ const BarcodeManage: React.FC = () => {
           return;
         }
 
-        // 多行：每行一个内容，忽略数量，直接按行数生成
-        if (lines.length > 1) {
-          if (lines.length > 100) {
-            message.warning('一次最多根据 100 行内容生成条码，请适当减少行数');
+        if (lines.length > 100) {
+          message.warning('一次最多根据 100 行内容生成条码，请适当减少行数');
+          return;
+        }
+
+        // 每行一个内容，完全按照输入生成，不再使用“生成数量”
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i] as string;
+          const err = validateValueByType(type, line);
+          if (err) {
+            message.error(`第 ${i + 1} 行：${err}`);
             return;
           }
-
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i] as string;
-            const err = validateValueByType(type, line);
-            if (err) {
-              message.error(`第 ${i + 1} 行：${err}`);
-              return;
-            }
-          }
-
-          const list: GeneratedCode[] = lines.map((v, index) => ({
-            id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
-            type,
-            value: v,
-          }));
-
-          setCodes((prev) => [...list, ...prev]);
-          message.success(`已根据多行内容生成 ${lines.length} 个条码`);
-          return;
         }
 
-        // 单行：沿用数量逻辑，可按同一内容生成多个
-        if (count <= 0) {
-          message.warning('生成数量必须大于 0');
-          return;
-        }
-
-        if (count > 100) {
-          message.warning('一次最多生成 100 个条码，请适当减少数量');
-          return;
-        }
-
-        const singleValue = lines[0] as string;
-        const error = validateValueByType(type, singleValue);
-        if (error) {
-          message.error(error);
-          return;
-        }
-
-        const list: GeneratedCode[] = Array.from({length: count}).map((_, index) => ({
-          id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
+        const list: GeneratedCode[] = lines.map((v) => ({
+          id: generateCodeId(),
           type,
-          value: singleValue,
+          value: v,
         }));
 
-        setCodes((prev) => [...list, ...prev]);
-        message.success(`已根据内容生成 ${count} 个条码`);
+        setCodes(list);
+        message.success(`已根据内容生成 ${lines.length} 个条码`);
       })
       .catch(() => {
         // ignore
