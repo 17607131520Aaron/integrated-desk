@@ -39,6 +39,13 @@ interface JsLogItem {
   raw: unknown;
 }
 
+interface MetroLogMessage {
+  level?: string;
+  data?: unknown[];
+  message?: unknown;
+  [key: string]: unknown;
+}
+
 // 连接模式选项
 const connectionModeOptions = [
   { label: 'ADB', value: 'adb' },
@@ -109,7 +116,7 @@ const RNDebugLogs: React.FC = () => {
 
       // Metro logger 常见格式：{ level, data, type }
       if (parsed && typeof parsed === 'object') {
-        const data = parsed as Record<string, unknown>;
+        const data = parsed as MetroLogMessage;
         if (typeof data.level === 'string') {
           level = data.level as LogLevel;
         }
@@ -173,6 +180,8 @@ const RNDebugLogs: React.FC = () => {
       };
 
       ws.onmessage = (event) => {
+        console.log(event, 'event');
+
         const logItem = parseMetroMessage(event);
         appendLog(logItem);
       };
