@@ -1,5 +1,7 @@
 import { lazy } from 'react';
+
 import { createHashRouter } from 'react-router-dom';
+
 import type { DataRouter } from 'react-router-dom';
 
 const LayoutHome = lazy(() => import('@/app'));
@@ -34,54 +36,54 @@ const router: DataRouter = createHashRouter([
     element: <LayoutHome />,
     children: [
       { index: true, element: <Home /> },
-        // Dashboard 路由
-        {
-          path: '/dashboard/overview',
-          element: <DashboardOverview />,
-        },
-        {
-          path: '/dashboard/analysis',
-          element: <DashboardAnalysis />,
-        },
-        // Documents 路由
-        {
-          path: '/documents/list',
-          element: <DocumentsList />,
-        },
-        {
-          path: '/documents/category',
-          element: <DocumentsCategory />,
-        },
-        {
-          path: '/documents/trash',
-          element: <DocumentsTrash />,
-        },
-        // Team 路由
-        {
-          path: '/team/members',
-          element: <TeamMembers />,
-        },
-        {
-          path: '/team/roles',
-          element: <TeamRoles />,
-        },
-        {
-          path: '/team/departments',
-          element: <TeamDepartments />,
-        },
-        // Settings 路由
-        {
-          path: '/settings/basic',
-          element: <SettingsBasic />,
-        },
-        {
-          path: '/settings/security',
-          element: <SettingsSecurity />,
-        },
-        {
-          path: '/settings/logs',
-          element: <SettingsLogs />,
-        },
+      // Dashboard 路由
+      {
+        path: '/dashboard/overview',
+        element: <DashboardOverview />,
+      },
+      {
+        path: '/dashboard/analysis',
+        element: <DashboardAnalysis />,
+      },
+      // Documents 路由
+      {
+        path: '/documents/list',
+        element: <DocumentsList />,
+      },
+      {
+        path: '/documents/category',
+        element: <DocumentsCategory />,
+      },
+      {
+        path: '/documents/trash',
+        element: <DocumentsTrash />,
+      },
+      // Team 路由
+      {
+        path: '/team/members',
+        element: <TeamMembers />,
+      },
+      {
+        path: '/team/roles',
+        element: <TeamRoles />,
+      },
+      {
+        path: '/team/departments',
+        element: <TeamDepartments />,
+      },
+      // Settings 路由
+      {
+        path: '/settings/basic',
+        element: <SettingsBasic />,
+      },
+      {
+        path: '/settings/security',
+        element: <SettingsSecurity />,
+      },
+      {
+        path: '/settings/logs',
+        element: <SettingsLogs />,
+      },
       {
         path: '/smartserviceappDebug/debuglogs',
         element: <SmartserviceappDebugLogs />,

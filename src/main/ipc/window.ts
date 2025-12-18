@@ -3,8 +3,10 @@
  */
 
 import { ipcMain } from 'electron';
-import type { WindowAction } from '../../types/electron';
+
 import { getMainWindow } from '../window';
+
+import type { WindowAction } from '../../types/electron';
 
 /**
  * 注册窗口控制处理器
@@ -13,7 +15,9 @@ export function registerWindowHandlers(): void {
   // 窗口控制
   ipcMain.on('window:control', (_event, action: WindowAction) => {
     const mainWindow = getMainWindow();
-    if (!mainWindow) return;
+    if (!mainWindow) {
+      return;
+    }
 
     switch (action) {
       case 'minimize':

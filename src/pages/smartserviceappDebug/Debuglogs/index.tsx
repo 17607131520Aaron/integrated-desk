@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const SmartserviceappDebugLogs: React.FC = () => {
   return <div>SmartserviceappDebugLogs</div>;

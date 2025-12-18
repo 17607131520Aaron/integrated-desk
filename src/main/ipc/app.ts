@@ -2,7 +2,7 @@
  * 应用信息 IPC 处理器
  */
 
-import { ipcMain, app } from 'electron';
+import { app, ipcMain } from 'electron';
 
 /**
  * 注册应用信息处理器

@@ -4,8 +4,10 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
-import type { ManagerOptions, SocketOptions as IOSocketOptions } from 'socket.io-client';
+
+import { io } from 'socket.io-client';
+
+import type { SocketOptions as IOSocketOptions, ManagerOptions, Socket } from 'socket.io-client';
 
 /** 连接状态 */
 export type ConnectionState = 'connecting' | 'connected' | 'disconnected' | 'error';
@@ -64,7 +66,11 @@ export interface UseSocketReturn {
   /** 发送消息 */
   emit: (event: string, data?: unknown) => void;
   /** 发送消息（带确认） */
-  emitWithAck: <T = unknown>(event: string, data?: unknown, timeout?: number) => Promise<EmitResult<T>>;
+  emitWithAck: <T = unknown>(
+    event: string,
+    data?: unknown,
+    timeout?: number,
+  ) => Promise<EmitResult<T>>;
 }
 
 // Socket 实例缓存，实现连接复用
@@ -88,7 +94,7 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
     let cached = socketCache.get(url);
 
     if (cached) {
-      cached.refCount++;
+      cached.refCount += 1;
       socketRef.current = cached.socket;
     } else {
       // 创建新连接
@@ -106,11 +112,21 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
 
       socketCache.set(url, { socket: newSocket, refCount: 1 });
       socketRef.current = newSocket;
-      cached = socketCache.get(url)!;
+      cached = socketCache.get(url);
     }
 
-    const currentSocket = cached.socket;
-    setSocket(currentSocket);
+    // 使用 ref 而不是 state 来避免在 effect 中同步调用 setState
+    const currentSocket = cached?.socket;
+    if (currentSocket) {
+      // 延迟设置 socket state，避免同步 setState
+      setTimeout(() => {
+        setSocket(currentSocket);
+      }, 0);
+    }
+
+    if (!currentSocket) {
+      return;
+    }
 
     // 事件处理
     const handleConnect = () => {
@@ -138,9 +154,14 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
 
     // 检查当前状态或自动连接
     if (currentSocket.connected) {
-      setConnectionState('connected');
+      // 延迟设置状态
+      setTimeout(() => {
+        setConnectionState('connected');
+      }, 0);
     } else if (autoConnect) {
-      setConnectionState('connecting');
+      setTimeout(() => {
+        setConnectionState('connecting');
+      }, 0);
       currentSocket.connect();
     }
 
@@ -153,17 +174,25 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
 
       const cache = socketCache.get(url);
       if (cache) {
-        cache.refCount--;
+        cache.refCount -= 1;
         if (cache.refCount <= 0) {
           cache.socket.disconnect();
           socketCache.delete(url);
         }
       }
     };
-  }, [url, autoConnect, socketOptions.path, socketOptions.reconnection,
-      socketOptions.reconnectionAttempts, socketOptions.reconnectionDelay,
-      socketOptions.timeout, socketOptions.auth, socketOptions.query,
-      socketOptions.extraHeaders]);
+  }, [
+    url,
+    autoConnect,
+    socketOptions.path,
+    socketOptions.reconnection,
+    socketOptions.reconnectionAttempts,
+    socketOptions.reconnectionDelay,
+    socketOptions.timeout,
+    socketOptions.auth,
+    socketOptions.query,
+    socketOptions.extraHeaders,
+  ]);
 
   // 手动连接
   const connect = useCallback(() => {
@@ -182,7 +211,9 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
 
   // 监听事件
   const on = useCallback(<T = unknown>(event: string, callback: (data: T) => void) => {
-    if (!socketRef.current) return () => {};
+    if (!socketRef.current) {
+      return () => {};
+    }
     socketRef.current.on(event, callback as (...args: unknown[]) => void);
     return () => {
       socketRef.current?.off(event, callback as (...args: unknown[]) => void);
@@ -191,7 +222,9 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
 
   // 取消监听
   const off = useCallback((event: string, callback?: (...args: unknown[]) => void) => {
-    if (!socketRef.current) return;
+    if (!socketRef.current) {
+      return;
+    }
     if (callback) {
       socketRef.current.off(event, callback);
     } else {
@@ -209,27 +242,26 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
   }, []);
 
   // 发送消息（带确认）
-  const emitWithAck = useCallback(<T = unknown>(
-    event: string,
-    data?: unknown,
-    timeout = 5000
-  ): Promise<EmitResult<T>> => {
-    return new Promise((resolve) => {
-      if (!socketRef.current?.connected) {
-        resolve({ success: false, error: 'Socket not connected' });
-        return;
-      }
+  const emitWithAck = useCallback(
+    <T = unknown>(event: string, data?: unknown, timeout = 5000): Promise<EmitResult<T>> => {
+      return new Promise((resolve) => {
+        if (!socketRef.current?.connected) {
+          resolve({ success: false, error: 'Socket not connected' });
+          return;
+        }
 
-      const timeoutId = setTimeout(() => {
-        resolve({ success: false, error: `Timeout after ${timeout}ms` });
-      }, timeout);
+        const timeoutId = setTimeout(() => {
+          resolve({ success: false, error: `Timeout after ${timeout}ms` });
+        }, timeout);
 
-      socketRef.current.emit(event, data, (response: T) => {
-        clearTimeout(timeoutId);
-        resolve({ success: true, data: response });
+        socketRef.current.emit(event, data, (response: T) => {
+          clearTimeout(timeoutId);
+          resolve({ success: true, data: response });
+        });
       });
-    });
-  }, []);
+    },
+    [],
+  );
 
   return {
     socket,

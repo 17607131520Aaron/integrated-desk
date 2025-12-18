@@ -1,7 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import { ArrowLeftOutlined, HomeOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Button, Space, Typography } from 'antd';
-import { ReloadOutlined, ArrowLeftOutlined, HomeOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import './index.scss';
 
 const { Paragraph } = Typography;
@@ -32,17 +33,17 @@ const NotFoundPage: React.FC = () => {
   return (
     <div className="not-found-page">
       <div className="not-found-page-background">
-        <div className="bg-pattern bg-pattern-1"></div>
-        <div className="bg-pattern bg-pattern-2"></div>
-        <div className="bg-pattern bg-pattern-3"></div>
+        <div className="bg-pattern bg-pattern-1" />
+        <div className="bg-pattern bg-pattern-2" />
+        <div className="bg-pattern bg-pattern-3" />
       </div>
       <div className="not-found-page-container">
         <div className="not-found-page-illustration">
           <div className="illustration-wrapper">
             <div className="illustration-person">
-              <div className="person-head"></div>
-              <div className="person-body"></div>
-              <div className="person-box"></div>
+              <div className="person-head" />
+              <div className="person-body" />
+              <div className="person-box" />
             </div>
             <div className="illustration-question-mark">
               <svg viewBox="0 0 100 100" className="question-svg">
@@ -54,19 +55,19 @@ const NotFoundPage: React.FC = () => {
               </svg>
             </div>
             <div className="illustration-network">
-              <div className="network-node network-node-1"></div>
-              <div className="network-node network-node-2"></div>
-              <div className="network-node network-node-3"></div>
-              <div className="network-node network-node-4"></div>
-              <div className="network-line network-line-1"></div>
-              <div className="network-line network-line-2"></div>
-              <div className="network-line network-line-3"></div>
+              <div className="network-node network-node-1" />
+              <div className="network-node network-node-2" />
+              <div className="network-node network-node-3" />
+              <div className="network-node network-node-4" />
+              <div className="network-line network-line-1" />
+              <div className="network-line network-line-2" />
+              <div className="network-line network-line-3" />
             </div>
             <div className="illustration-plant">
-              <div className="plant-pot"></div>
-              <div className="plant-leaf plant-leaf-1"></div>
-              <div className="plant-leaf plant-leaf-2"></div>
-              <div className="plant-leaf plant-leaf-3"></div>
+              <div className="plant-pot" />
+              <div className="plant-leaf plant-leaf-1" />
+              <div className="plant-leaf plant-leaf-2" />
+              <div className="plant-leaf plant-leaf-3" />
             </div>
           </div>
         </div>

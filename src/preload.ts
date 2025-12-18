@@ -4,12 +4,13 @@
  */
 
 import { contextBridge, ipcRenderer } from 'electron';
-import type { 
-  ElectronAPI, 
-  OpenDialogOptions, 
-  SaveDialogOptions, 
+
+import type {
+  ElectronAPI,
   NotificationOptions,
-  WindowAction 
+  OpenDialogOptions,
+  SaveDialogOptions,
+  WindowAction,
 } from './types/electron';
 
 const electronAPI: ElectronAPI = {
@@ -20,14 +21,16 @@ const electronAPI: ElectronAPI = {
   openFile: (options?: OpenDialogOptions) => ipcRenderer.invoke('dialog:openFile', options),
   saveFile: (options?: SaveDialogOptions) => ipcRenderer.invoke('dialog:saveFile', options),
   readFile: (filePath: string) => ipcRenderer.invoke('file:read', filePath),
-  writeFile: (filePath: string, content: string) => ipcRenderer.invoke('file:write', filePath, content),
+  writeFile: (filePath: string, content: string) =>
+    ipcRenderer.invoke('file:write', filePath, content),
 
   // 窗口控制
   windowControl: (action: WindowAction) => ipcRenderer.send('window:control', action),
   isMaximized: () => ipcRenderer.invoke('window:isMaximized'),
 
   // 系统通知
-  showNotification: (options: NotificationOptions) => ipcRenderer.send('notification:show', options),
+  showNotification: (options: NotificationOptions) =>
+    ipcRenderer.send('notification:show', options),
 
   // 剪贴板
   copyToClipboard: (text: string) => ipcRenderer.send('clipboard:write', text),

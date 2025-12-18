@@ -1,8 +1,16 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { Layout, Menu, Avatar, Dropdown, Space, Typography } from 'antd';
-import { menuItems ,userMenuItems} from './constants';
-import { AppstoreOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons';
+import React, { useMemo, useState } from 'react';
+
+import {
+  AppstoreOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { Avatar, Dropdown, Layout, Menu, Space, Typography } from 'antd';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+
+import { menuItems, userMenuItems } from './constants';
+
 import './app.scss';
 
 const { Header, Sider, Content } = Layout;
@@ -10,7 +18,6 @@ const { Text } = Typography;
 
 const App: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [openKeys, setOpenKeys] = useState<string[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -21,8 +28,10 @@ const App: React.FC = () => {
 
     // 遍历菜单项找到匹配的路径
     menuItems?.forEach((item) => {
-      if (!item || typeof item === 'string') return;
-      
+      if (!item || typeof item === 'string') {
+        return;
+      }
+
       // 精确匹配首页
       if (item.key === '/' && (path === '/' || path === '')) {
         keys.push('/');
@@ -41,40 +50,33 @@ const App: React.FC = () => {
     return keys.length > 0 ? keys : ['/'];
   }, [location.pathname]);
 
-  // 首次进入时默认导航到首页
-  useEffect(() => {
-    const path = location.pathname || '/';
-    // 如果路径为空或者是根路径，确保导航到首页
-    if (path === '/' || path === '') {
-      // 如果已经在首页，不需要重复导航
-      if (path === '/') {
-        return;
-      }
-    }
-  }, []);
-
-  // 自动展开当前页面的父菜单
-  useEffect(() => {
-    const path = location.pathname || '/';
-    const newOpenKeys: string[] = [...openKeys];
+  // 计算需要展开的菜单 keys
+  const getKeysToOpen = (path: string): string[] => {
+    const keysToOpen: string[] = [];
 
     menuItems?.forEach((item) => {
-      if (!item || typeof item === 'string') return;
-      
+      if (!item || typeof item === 'string') {
+        return;
+      }
+
       if ('children' in item && item.children) {
         const hasMatch = item.children.some(
-          (child) => child && typeof child !== 'string' && child.key === path
+          (child) => child && typeof child !== 'string' && child.key === path,
         );
-        if (hasMatch && item.key && !newOpenKeys.includes(item.key as string)) {
-          newOpenKeys.push(item.key as string);
+        if (hasMatch && item.key) {
+          keysToOpen.push(item.key as string);
         }
       }
     });
 
-    if (newOpenKeys.length !== openKeys.length) {
-      setOpenKeys(newOpenKeys);
-    }
-  }, [location.pathname]);
+    return keysToOpen;
+  };
+
+  // 初始化时计算默认展开的菜单
+  const [openKeys, setOpenKeys] = useState<string[]>(() => {
+    const path = location.pathname || '/';
+    return getKeysToOpen(path);
+  });
 
   // 菜单点击处理
   const handleMenuClick = ({ key }: { key: string }) => {
@@ -96,10 +98,10 @@ const App: React.FC = () => {
       navigate('/login');
     } else if (key === 'profile') {
       // 处理个人中心跳转
-      console.log('跳转到个人中心');
+      navigate('/profile');
     } else if (key === 'settings') {
       // 处理账户设置跳转
-      console.log('跳转到账户设置');
+      navigate('/settings/basic');
     }
   };
 
@@ -123,7 +125,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="asp-comprehension-home-menu-divider"></div>
+        <div className="asp-comprehension-home-menu-divider" />
 
         <Menu
           theme="light"
@@ -157,7 +159,10 @@ const App: React.FC = () => {
                 }}
                 placement="bottomRight"
               >
-                <Space className="asp-comprehension-home-header-content-user" style={{ cursor: 'pointer' }}>
+                <Space
+                  className="asp-comprehension-home-header-content-user"
+                  style={{ cursor: 'pointer' }}
+                >
                   <Avatar
                     size={32}
                     icon={<UserOutlined />}

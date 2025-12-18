@@ -3,7 +3,9 @@
  */
 
 import { app, BrowserWindow } from 'electron';
+
 import started from 'electron-squirrel-startup';
+
 import { registerIpcHandlers } from './ipc';
 import { createMainWindow, getMainWindow } from './window';
 
@@ -16,7 +18,7 @@ if (started) {
 app.on('ready', () => {
   // 注册 IPC 处理器
   registerIpcHandlers();
-  
+
   // 创建主窗口
   createMainWindow();
 });

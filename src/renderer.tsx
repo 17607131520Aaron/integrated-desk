@@ -27,10 +27,12 @@
  */
 
 import { Suspense } from 'react';
-import { RouterProvider } from 'react-router-dom';
+
 import { createRoot } from 'react-dom/client';
+
 import { ConfigProvider } from 'antd';
 import ZhCN from 'antd/locale/zh_CN';
+import { RouterProvider } from 'react-router-dom';
 
 import routers from './router';
 import './renderer.scss';
@@ -43,5 +45,5 @@ root.render(
     <Suspense fallback={<div>...加载中</div>}>
       <RouterProvider router={routers} />
     </Suspense>
-  </ConfigProvider>
+  </ConfigProvider>,
 );

@@ -2,9 +2,10 @@
  * 系统相关 IPC 处理器
  */
 
-import { ipcMain, clipboard, shell, Notification } from 'electron';
+import { clipboard, ipcMain, Notification, shell } from 'electron';
 import os from 'node:os';
-import type { SystemInfo, NotificationOptions } from '../../types/electron';
+
+import type { NotificationOptions, SystemInfo } from '../../types/electron';
 
 /**
  * 注册系统相关处理器

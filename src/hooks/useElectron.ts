@@ -3,12 +3,13 @@
  * 提供类型安全的 Electron API 访问
  */
 
-import { useCallback, useEffect, useState } from 'react';
-import type { 
-  SystemInfo, 
-  OpenDialogOptions, 
-  SaveDialogOptions, 
-  NotificationOptions 
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import type {
+  NotificationOptions,
+  OpenDialogOptions,
+  SaveDialogOptions,
+  SystemInfo,
 } from '@/types/electron';
 
 /**
@@ -36,18 +37,43 @@ export function useSystemInfo() {
   const [systemInfo, setSystemInfo] = useState<SystemInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isMounted = useRef(true);
 
   useEffect(() => {
+    isMounted.current = true;
     const api = getElectronAPI();
+
     if (!api) {
-      setLoading(false);
+      // 使用 setTimeout 避免在 effect 中同步调用 setState
+      setTimeout(() => {
+        if (isMounted.current) {
+          setLoading(false);
+        }
+      }, 0);
       return;
     }
 
-    api.getSystemInfo()
-      .then(setSystemInfo)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    api
+      .getSystemInfo()
+      .then((info) => {
+        if (isMounted.current) {
+          setSystemInfo(info);
+        }
+      })
+      .catch((err) => {
+        if (isMounted.current) {
+          setError(err.message);
+        }
+      })
+      .finally(() => {
+        if (isMounted.current) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   return { systemInfo, loading, error };
@@ -61,7 +87,9 @@ export function useWindowState() {
 
   useEffect(() => {
     const api = getElectronAPI();
-    if (!api) return;
+    if (!api) {
+      return;
+    }
 
     // 获取初始状态
     api.isMaximized().then(setIsMaximized);
@@ -95,20 +123,26 @@ export function useWindowState() {
  * 文件操作 Hook
  */
 export function useFileOperations() {
-  const openFile = useCallback(async (options?: OpenDialogOptions) => {
-    return getElectronAPI()?.openFile(options) ?? null;
+  const openFile = useCallback((options?: OpenDialogOptions) => {
+    return getElectronAPI()?.openFile(options) ?? Promise.resolve(null);
   }, []);
 
-  const saveFile = useCallback(async (options?: SaveDialogOptions) => {
-    return getElectronAPI()?.saveFile(options) ?? null;
+  const saveFile = useCallback((options?: SaveDialogOptions) => {
+    return getElectronAPI()?.saveFile(options) ?? Promise.resolve(null);
   }, []);
 
-  const readFile = useCallback(async (filePath: string) => {
-    return getElectronAPI()?.readFile(filePath) ?? { success: false, error: 'Not in Electron' };
+  const readFile = useCallback((filePath: string) => {
+    return (
+      getElectronAPI()?.readFile(filePath) ??
+      Promise.resolve({ success: false, error: 'Not in Electron' })
+    );
   }, []);
 
-  const writeFile = useCallback(async (filePath: string, content: string) => {
-    return getElectronAPI()?.writeFile(filePath, content) ?? { success: false, error: 'Not in Electron' };
+  const writeFile = useCallback((filePath: string, content: string) => {
+    return (
+      getElectronAPI()?.writeFile(filePath, content) ??
+      Promise.resolve({ success: false, error: 'Not in Electron' })
+    );
   }, []);
 
   return { openFile, saveFile, readFile, writeFile };
@@ -128,7 +162,7 @@ export function useClipboard() {
     }
   }, []);
 
-  const paste = useCallback(async () => {
+  const paste = useCallback(() => {
     const api = getElectronAPI();
     if (api) {
       return api.readFromClipboard();
@@ -161,13 +195,13 @@ export function useNotification() {
  * 外部链接 Hook
  */
 export function useExternalLink() {
-  const open = useCallback(async (url: string) => {
+  const open = useCallback((url: string) => {
     const api = getElectronAPI();
     if (api) {
-      await api.openExternal(url);
-    } else {
-      window.open(url, '_blank');
+      return api.openExternal(url);
     }
+    window.open(url, '_blank');
+    return Promise.resolve();
   }, []);
 
   return { open };
