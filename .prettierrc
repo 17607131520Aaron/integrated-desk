@@ -6,7 +6,7 @@
   "tabWidth": 2,
   "useTabs": false,
   "endOfLine": "lf",
-  "bracketSpacing": true,
+  "bracketSpacing": false,
   "arrowParens": "always",
   "proseWrap": "never",
   "htmlWhitespaceSensitivity": "css",
