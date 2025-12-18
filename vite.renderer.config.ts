@@ -1,15 +1,11 @@
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
 import path from "path";
 
+import { defineConfig } from "vite";
+
 // https://vitejs.dev/config
+// 注意：Electron Forge 的 Vite 插件会自动处理 React，无需手动添加 @vitejs/plugin-react
 export default defineConfig({
-  plugins: [
-    react({
-      // 使用新的 JSX 运行时
-      jsxRuntime: "automatic",
-    }),
-  ],
+  plugins: [],
 
   // 路径别名配置
   resolve: {
