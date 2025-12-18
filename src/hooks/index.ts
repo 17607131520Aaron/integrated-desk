@@ -9,5 +9,3 @@ export type {
   UseSocketReturn,
   EmitResult,
 } from './useSocket';
-
-export * from './useElectron';

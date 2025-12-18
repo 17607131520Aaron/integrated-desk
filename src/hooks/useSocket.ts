@@ -7,8 +7,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import type { ManagerOptions, SocketOptions as IOSocketOptions } from 'socket.io-client';
 
-// ============ 类型定义 ============
-
 /** 连接状态 */
 export type ConnectionState = 'connecting' | 'connected' | 'disconnected' | 'error';
 
@@ -26,8 +24,6 @@ export interface UseSocketOptions {
   reconnectionAttempts?: number;
   /** 重连延迟（毫秒），默认 1000 */
   reconnectionDelay?: number;
-  /** 最大重连延迟（毫秒），默认 5000 */
-  reconnectionDelayMax?: number;
   /** 连接超时（毫秒），默认 20000 */
   timeout?: number;
   /** 认证信息 */
@@ -47,107 +43,129 @@ export interface EmitResult<T = unknown> {
 
 /** useSocket 返回值 */
 export interface UseSocketReturn {
+  /** Socket 实例 */
   socket: Socket | null;
+  /** 是否已连接 */
   isConnected: boolean;
+  /** 是否正在连接 */
   isConnecting: boolean;
+  /** 错误信息 */
   error: Error | null;
+  /** 连接状态 */
   connectionState: ConnectionState;
+  /** 手动连接 */
   connect: () => void;
+  /** 手动断开 */
   disconnect: () => void;
+  /** 监听事件 */
   on: <T = unknown>(event: string, callback: (data: T) => void) => () => void;
+  /** 取消监听 */
   off: (event: string, callback?: (...args: unknown[]) => void) => void;
+  /** 发送消息 */
   emit: (event: string, data?: unknown) => void;
+  /** 发送消息（带确认） */
   emitWithAck: <T = unknown>(event: string, data?: unknown, timeout?: number) => Promise<EmitResult<T>>;
 }
 
-// ============ Socket 管理器 ============
+// Socket 实例缓存，实现连接复用
+const socketCache = new Map<string, { socket: Socket; refCount: number }>();
 
-interface SocketInstance {
-  socket: Socket;
-  refCount: number;
-  disconnectTimer: ReturnType<typeof setTimeout> | null;
-}
-
-const socketInstances = new Map<string, SocketInstance>();
-const DISCONNECT_DELAY = 5000;
-const DEFAULT_ACK_TIMEOUT = 5000;
-
-function getOrCreateSocket(url: string, options?: Partial<ManagerOptions & IOSocketOptions>): Socket {
-  const existing = socketInstances.get(url);
-  if (existing) {
-    if (existing.disconnectTimer) {
-      clearTimeout(existing.disconnectTimer);
-      existing.disconnectTimer = null;
-    }
-    existing.refCount++;
-    return existing.socket;
-  }
-
-  const socket = io(url, { autoConnect: false, ...options });
-  socketInstances.set(url, { socket, refCount: 1, disconnectTimer: null });
-  return socket;
-}
-
-function releaseSocket(url: string): void {
-  const instance = socketInstances.get(url);
-  if (!instance) return;
-  instance.refCount--;
-  if (instance.refCount <= 0) {
-    instance.disconnectTimer = setTimeout(() => {
-      instance.socket.disconnect();
-      socketInstances.delete(url);
-    }, DISCONNECT_DELAY);
-  }
-}
-
-// ============ Hook 实现 ============
-
+/**
+ * 通用 Socket Hook
+ */
 export function useSocket(options: UseSocketOptions): UseSocketReturn {
-  const { url, autoConnect = true, ...opts } = options;
+  const { url, autoConnect = true, ...socketOptions } = options;
+
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected');
   const [error, setError] = useState<Error | null>(null);
+
   const socketRef = useRef<Socket | null>(null);
 
+  // 初始化 Socket
   useEffect(() => {
-    const s = getOrCreateSocket(url, {
-      path: opts.path,
-      reconnection: opts.reconnection ?? true,
-      reconnectionAttempts: opts.reconnectionAttempts ?? 3,
-      reconnectionDelay: opts.reconnectionDelay ?? 1000,
-      reconnectionDelayMax: opts.reconnectionDelayMax ?? 5000,
-      timeout: opts.timeout ?? 20000,
-      auth: opts.auth,
-      query: opts.query,
-      extraHeaders: opts.extraHeaders,
-    });
-    socketRef.current = s;
-    setSocket(s);
+    // 检查缓存
+    let cached = socketCache.get(url);
 
-    const onConnect = () => { setConnectionState('connected'); setError(null); };
-    const onDisconnect = () => setConnectionState('disconnected');
-    const onError = (e: Error) => { setConnectionState('error'); setError(e); };
-    const onReconnect = () => setConnectionState('connecting');
+    if (cached) {
+      cached.refCount++;
+      socketRef.current = cached.socket;
+    } else {
+      // 创建新连接
+      const newSocket = io(url, {
+        autoConnect: false,
+        reconnection: socketOptions.reconnection ?? true,
+        reconnectionAttempts: socketOptions.reconnectionAttempts ?? 3,
+        reconnectionDelay: socketOptions.reconnectionDelay ?? 1000,
+        timeout: socketOptions.timeout ?? 20000,
+        path: socketOptions.path,
+        auth: socketOptions.auth,
+        query: socketOptions.query,
+        extraHeaders: socketOptions.extraHeaders,
+      } as Partial<ManagerOptions & IOSocketOptions>);
 
-    s.on('connect', onConnect);
-    s.on('disconnect', onDisconnect);
-    s.on('connect_error', onError);
-    s.io.on('reconnect_attempt', onReconnect);
+      socketCache.set(url, { socket: newSocket, refCount: 1 });
+      socketRef.current = newSocket;
+      cached = socketCache.get(url)!;
+    }
 
-    if (s.connected) setConnectionState('connected');
-    else if (autoConnect) { setConnectionState('connecting'); s.connect(); }
+    const currentSocket = cached.socket;
+    setSocket(currentSocket);
 
-    return () => {
-      s.off('connect', onConnect);
-      s.off('disconnect', onDisconnect);
-      s.off('connect_error', onError);
-      s.io.off('reconnect_attempt', onReconnect);
-      releaseSocket(url);
+    // 事件处理
+    const handleConnect = () => {
+      setConnectionState('connected');
+      setError(null);
     };
-  }, [url, autoConnect, opts.path, opts.reconnection, opts.reconnectionAttempts,
-      opts.reconnectionDelay, opts.reconnectionDelayMax, opts.timeout,
-      opts.auth, opts.query, opts.extraHeaders]);
 
+    const handleDisconnect = () => {
+      setConnectionState('disconnected');
+    };
+
+    const handleConnectError = (err: Error) => {
+      setConnectionState('error');
+      setError(err);
+    };
+
+    const handleReconnectAttempt = () => {
+      setConnectionState('connecting');
+    };
+
+    currentSocket.on('connect', handleConnect);
+    currentSocket.on('disconnect', handleDisconnect);
+    currentSocket.on('connect_error', handleConnectError);
+    currentSocket.io.on('reconnect_attempt', handleReconnectAttempt);
+
+    // 检查当前状态或自动连接
+    if (currentSocket.connected) {
+      setConnectionState('connected');
+    } else if (autoConnect) {
+      setConnectionState('connecting');
+      currentSocket.connect();
+    }
+
+    // 清理
+    return () => {
+      currentSocket.off('connect', handleConnect);
+      currentSocket.off('disconnect', handleDisconnect);
+      currentSocket.off('connect_error', handleConnectError);
+      currentSocket.io.off('reconnect_attempt', handleReconnectAttempt);
+
+      const cache = socketCache.get(url);
+      if (cache) {
+        cache.refCount--;
+        if (cache.refCount <= 0) {
+          cache.socket.disconnect();
+          socketCache.delete(url);
+        }
+      }
+    };
+  }, [url, autoConnect, socketOptions.path, socketOptions.reconnection,
+      socketOptions.reconnectionAttempts, socketOptions.reconnectionDelay,
+      socketOptions.timeout, socketOptions.auth, socketOptions.query,
+      socketOptions.extraHeaders]);
+
+  // 手动连接
   const connect = useCallback(() => {
     if (socketRef.current && !socketRef.current.connected) {
       setConnectionState('connecting');
@@ -155,38 +173,75 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
     }
   }, []);
 
+  // 手动断开
   const disconnect = useCallback(() => {
-    socketRef.current?.connected && socketRef.current.disconnect();
+    if (socketRef.current?.connected) {
+      socketRef.current.disconnect();
+    }
   }, []);
 
-  const on = useCallback(<T,>(event: string, cb: (data: T) => void) => {
-    socketRef.current?.on(event, cb as (...args: unknown[]) => void);
-    return () => { socketRef.current?.off(event, cb as (...args: unknown[]) => void); };
+  // 监听事件
+  const on = useCallback(<T = unknown>(event: string, callback: (data: T) => void) => {
+    if (!socketRef.current) return () => {};
+    socketRef.current.on(event, callback as (...args: unknown[]) => void);
+    return () => {
+      socketRef.current?.off(event, callback as (...args: unknown[]) => void);
+    };
   }, []);
 
-  const off = useCallback((event: string, cb?: (...args: unknown[]) => void) => {
-    cb ? socketRef.current?.off(event, cb) : socketRef.current?.off(event);
+  // 取消监听
+  const off = useCallback((event: string, callback?: (...args: unknown[]) => void) => {
+    if (!socketRef.current) return;
+    if (callback) {
+      socketRef.current.off(event, callback);
+    } else {
+      socketRef.current.off(event);
+    }
   }, []);
 
+  // 发送消息
   const emit = useCallback((event: string, data?: unknown) => {
     if (!socketRef.current?.connected) {
-      console.warn(`[useSocket] Cannot emit "${event}": not connected`);
+      console.warn(`[useSocket] Cannot emit "${event}": Socket not connected`);
       return;
     }
     socketRef.current.emit(event, data);
   }, []);
 
-  const emitWithAck = useCallback(<T,>(event: string, data?: unknown, timeout = DEFAULT_ACK_TIMEOUT): Promise<EmitResult<T>> => {
+  // 发送消息（带确认）
+  const emitWithAck = useCallback(<T = unknown>(
+    event: string,
+    data?: unknown,
+    timeout = 5000
+  ): Promise<EmitResult<T>> => {
     return new Promise((resolve) => {
       if (!socketRef.current?.connected) {
         resolve({ success: false, error: 'Socket not connected' });
         return;
       }
-      const tid = setTimeout(() => resolve({ success: false, error: `Timeout ${timeout}ms` }), timeout);
-      socketRef.current.emit(event, data, (res: T) => { clearTimeout(tid); resolve({ success: true, data: res }); });
+
+      const timeoutId = setTimeout(() => {
+        resolve({ success: false, error: `Timeout after ${timeout}ms` });
+      }, timeout);
+
+      socketRef.current.emit(event, data, (response: T) => {
+        clearTimeout(timeoutId);
+        resolve({ success: true, data: response });
+      });
     });
   }, []);
 
-  return { socket, isConnected: connectionState === 'connected', isConnecting: connectionState === 'connecting',
-    error, connectionState, connect, disconnect, on, off, emit, emitWithAck };
+  return {
+    socket,
+    isConnected: connectionState === 'connected',
+    isConnecting: connectionState === 'connecting',
+    error,
+    connectionState,
+    connect,
+    disconnect,
+    on,
+    off,
+    emit,
+    emitWithAck,
+  };
 }
