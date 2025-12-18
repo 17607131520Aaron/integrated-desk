@@ -28,6 +28,12 @@ export const DEFAULT_MAX_LOGS = 1000;
 export const DEFAULT_RECONNECT_DELAY = 3000;
 
 /**
+ * Metro Logger 默认 WebSocket 路径
+ * 如果你的 RN 版本或自定义配置不同，可以在这里统一修改
+ */
+export const DEFAULT_METRO_LOGGER_PATH = '/message?role=logger';
+
+/**
  * 获取日志级别颜色
  */
 export const getLogLevelColor = (level: string): string => {
