@@ -13,41 +13,6 @@ export default defineConfig({
     extensions: [".mjs", ".js", ".mts", ".ts", ".json"],
   },
 
-  // 构建配置
-  build: {
-    target: "node18", // Electron 预加载脚本使用 Node.js 环境
-    outDir: ".vite/build",
-    lib: {
-      entry: path.resolve(__dirname, "src/preload.ts"),
-      formats: ["cjs"],
-      fileName: () => "preload.js",
-    },
-    rollupOptions: {
-      external: [
-        // Electron 相关模块应该保持外部化
-        "electron",
-        // Node.js 内置模块
-        "node:path",
-        "node:fs",
-        "node:url",
-        "node:crypto",
-        "node:os",
-        "node:util",
-        "node:stream",
-        "node:buffer",
-        "node:events",
-      ],
-      output: {
-        entryFileNames: "[name].js",
-        chunkFileNames: "[name]-[hash].js",
-        assetFileNames: "[name]-[hash].[ext]",
-      },
-    },
-    sourcemap: process.env.NODE_ENV === "development",
-    minify: process.env.NODE_ENV === "production" ? "esbuild" : false,
-    emptyOutDir: false, // 预加载脚本和主进程共享输出目录
-  },
-
   // 环境变量前缀
   envPrefix: ["VITE_", "ELECTRON_"],
 

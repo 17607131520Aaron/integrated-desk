@@ -114,9 +114,10 @@ export default defineConfig({
     devSourcemap: true,
     preprocessorOptions: {
       scss: {
+        // 使用新版 API 消除 legacy-js-api 警告
+        api: 'modern-compiler',
         // 全局 SCSS 变量和混入（如需要）
-        // additionalData: `@import "@/styles/variables.scss";`,
-        charset: false,
+        // additionalData: `@use "@/styles/variables" as *;`,
       },
     },
     modules: {
